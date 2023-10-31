@@ -24,10 +24,11 @@ jobs:
         include:
           - arch_os: linux_arm64
             runs-on: ubuntu-20.04
-            with-emulation: true
             fips: true
+            qemu: true
     with:
       arch_os: ${{ matrix.arch_os }}
       runs-on: ${{ matrix.runs-on }}
       fips: ${{ matrix.fips == true }}
+      qemu: ${{ matrix.qemu == true }}
       save-cache: true
