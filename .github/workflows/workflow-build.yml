@@ -22,6 +22,10 @@ on:
         description: Save the module and build caches.
         default: false
         type: boolean
+      with-emulation:
+        description: run corss platform build with qemu user space emulation
+        default: false
+        type: boolean
 
 defaults:
   run:
@@ -117,18 +121,29 @@ jobs:
         run: make install-builder
         working-directory: ./otelcolbuilder
 
+      - name: Set up QEMU
+        if: ${{ inputs.with-emulation }}
+        uses: docker/setup-qemu-action@v3.0.0
+
       - name: Build
         if: ${{ ! inputs.fips && (! inputs.only-if-changed || steps.changed-files.outputs.any_changed == 'true') }}
         run: make otelcol-sumo-${{inputs.arch_os}}
         working-directory: ./otelcolbuilder
 
       - name: Build (FIPS)
-        if: ${{ inputs.fips && contains(inputs.arch_os, 'linux') && (! inputs.only-if-changed || steps.changed-files.outputs.any_changed == 'true') }}
+        if: ${{ inputs.fips && contains(inputs.arch_os, 'linux') && ! inputs.with-emulation && (! inputs.only-if-changed || steps.changed-files.outputs.any_changed == 'true') }}
         id: containerized-build
         uses: ./ci/build-fips-action
         with:
           go-version: ${{ env.GO_VERSION }}
           arch_os: ${{ inputs.arch_os }}
+
+      - name: Build (FIPS) emulated
+        if: ${{ inputs.fips && contains(inputs.arch_os, 'linux') && inputs.with-emulation && (! inputs.only-if-changed || steps.changed-files.outputs.any_changed == 'true') }}
+        id: emulated-build
+        run: make build-fips-${{inputs.arch_os}}
+        working-directory: ./otelcolbuilder
+
 
       - name: Build (FIPS)
         if: ${{ inputs.fips && ! contains(inputs.arch_os, 'linux') && (! inputs.only-if-changed || steps.changed-files.outputs.any_changed == 'true') }}

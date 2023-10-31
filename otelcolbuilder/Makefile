@@ -143,10 +143,15 @@ build-debug: ensure-correct-builder-version
 	@$(MAKE) generate-sources
 	@$(MAKE) _gobuild_debug
 
-.PHONY: build-fips
-build-fips:
-	docker build --platform linux/amd64 -t otelcol-sumo-builder-fips -f ../ci/build-fips-action/Dockerfile ../ci/build-fips-action
-	docker run -it --platform linux/amd64 --rm -v $(PWD)/../:/github/workspace -w /github/workspace --tmpfs /tmp otelcol-sumo-builder-fips
+.PHONY: build-fips-linux_amd64
+build-fips-linux_amd64:
+	docker build --platform linux/amd64 -t otelcol-sumo-builder-fips:amd64 -f ../ci/build-fips-action/Dockerfile ../ci/build-fips-action
+	docker run -it --platform linux/amd64 --rm -v $(PWD)/../:/github/workspace -w /github/workspace --tmpfs /tmp otelcol-sumo-builder-fips:amd64 linux_amd64
+
+.PHONY: build-fips-linux_arm64
+build-fips-linux_arm64:
+	docker build --platform linux/arm64 -t otelcol-sumo-builder-fips:arm64 -f ../ci/build-fips-action/Dockerfile ../ci/build-fips-action
+	docker run -it --platform linux/arm64 --rm -v $(PWD)/../:/github/workspace -w /github/workspace --tmpfs /tmp otelcol-sumo-builder-fips:arm64 linux_arm64
 
 .PHONY: generate-sources
 generate-sources:
