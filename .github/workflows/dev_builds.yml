@@ -22,17 +22,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch_os: linux_amd64
-            runs-on: ubuntu-20.04
-            fips: true
           - arch_os: linux_arm64
             runs-on: ubuntu-20.04
-          - arch_os: linux_arm64
-            runs-on: ubuntu-20.04
-            fips: true
             with-emulation: true
-          - arch_os: linux_arm64
-            runs-on: buildjet-2vcpu-ubuntu-2204-arm
             fips: true
     with:
       arch_os: ${{ matrix.arch_os }}

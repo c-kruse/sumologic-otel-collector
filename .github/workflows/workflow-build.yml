@@ -131,7 +131,7 @@ jobs:
         working-directory: ./otelcolbuilder
 
       - name: Build (FIPS)
-        if: ${{ inputs.fips && contains(inputs.arch_os, 'linux') && ! inputs.with-emulation && (! inputs.only-if-changed || steps.changed-files.outputs.any_changed == 'true') }}
+        if: ${{ (! inputs.with-emulation ) && inputs.fips && contains(inputs.arch_os, 'linux')  && (! inputs.only-if-changed || steps.changed-files.outputs.any_changed == 'true') }}
         id: containerized-build
         uses: ./ci/build-fips-action
         with:
